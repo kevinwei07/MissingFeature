@@ -26,39 +26,52 @@ def SubmitGenerator(prediction, sampleFile):
     df.to_csv('result/prediction.csv', index=False)
 
 
-def plot_history(arch, plot_acc=True):
+def plot_history(arch, max_epoch, plot_acc=True):
     """
     Ploting training process
     """
-    plot_list=[arch,]
-
-    history_path = f'{arch}/history.json'
-    with open(history_path, 'r') as f:
-        history = json.loads(f.read())
-
-    #pdb()
-    train_loss = [l['loss'] for l in history['train']]
-    valid_loss = [l['loss'] for l in history['valid']]
-
+    plot_list = [arch, 'missing0', 'missing0+bn','missing0+bn+lr','missing0+bn+lr+l2']
     plt.figure(figsize=(7, 5))
-    plt.title('Loss')
-    plt.plot(train_loss, label='train')
-    plt.plot(valid_loss, label='valid')
-    plt.xlabel("Lowest Loss : " + str(min([[l['loss'], idx + 1] for idx, l in enumerate(history['valid'])])))
+    plt.grid()
+    plt.xlim(0, max_epoch)
+    line_style = ['-','--','-.',':','.']
+
+    for id, history_path in enumerate(plot_list):
+        path = f'{history_path}/history.json'
+        with open(path, 'r') as f:
+            history = json.loads(f.read())
+            train_loss = [loss['loss'] for loss in history['train']]
+            valid_loss = [loss['loss'] for loss in history['valid']]
+            ls = line_style[id]
+            # plt.plot(train_loss, label='train_'+history_path)
+            plt.plot(valid_loss,ls, label='valid_'+history_path)
+            plt.xlabel("Lowest Loss : " + str(min([[l['loss'], idx + 1] for idx, l in enumerate(history['valid'])]))+ " in "+ history_path)
     plt.legend()
+    plt.title('Loss')
+
+    if not os.path.exists(arch):
+        os.makedirs(arch)
     plt.savefig(f'{arch}/loss.png')
 
-    print('Lowest Loss ', min([[l['loss'], idx + 1] for idx, l in enumerate(history['valid'])]))
+
+    print('Lowest Loss ', str(min([[l['loss'], idx + 1] for idx, l in enumerate(history['valid'])]))+ " in "+ history_path)
 
     if plot_acc:
-        train_f1 = [l['accuracy'] for l in history['train']]
-        valid_f1 = [l['accuracy'] for l in history['valid']]
         plt.figure(figsize=(7, 5))
-        plt.title('Accuracy')
-        plt.plot(train_f1, label='train')
-        plt.plot(valid_f1, label='valid')
-        plt.xlabel("Best acc : " + str(max([[l['accuracy'], idx + 1] for idx, l in enumerate(history['valid'])])))
+        plt.grid()
+        plt.xlim(0,max_epoch)
+        for id, history_path in enumerate(plot_list):
+            path = f'{history_path}/history.json'
+            with open(path, 'r') as f:
+                history = json.loads(f.read())
+                train_f1 = [l['accuracy'] for l in history['train']]
+                valid_f1 = [l['accuracy'] for l in history['valid']]
+                plt.title('Accuracy')
+                ls = line_style[id]
+                #plt.plot(train_f1, label='train')
+                plt.plot(valid_f1, ls, label='valid_'+history_path)
+                plt.xlabel("Best acc : " + str(max([[l['accuracy'], idx + 1] for idx, l in enumerate(history['valid'])]))+ " in "+ history_path)
         plt.legend()
         plt.savefig(f'{arch}/accuracy.png')
 
-        print('Best acc', max([[l['accuracy'], idx + 1] for idx, l in enumerate(history['valid'])]))
+        print('Best acc', str(max([[l['accuracy'], idx + 1] for idx, l in enumerate(history['valid'])]))+ " in "+ history_path)
