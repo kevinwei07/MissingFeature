@@ -59,13 +59,17 @@ def main():
         trainer = Trainer(device, trainData, validData, model, criteria, opt, batch_size, args.arch)
 
         max_epoch = args.max_epoch
+        min_loss = 100
+
         for epoch in range(max_epoch):
             #if epoch >= 10:
                 #plot_history(args.arch, plot_acc=True)
             print('Epoch: {}'.format(epoch))
             trainer.run_epoch(epoch, True) # True for training
-            trainer.run_epoch(epoch, False)
-            trainer.save(epoch)
+            loss = trainer.run_epoch(epoch, False)
+            if loss<min_loss:
+                min_loss = loss
+                trainer.save(epoch)
 
     if args.do_predict:
 
@@ -100,7 +104,7 @@ def main():
         SubmitGenerator(prediction, args.data_dir + 'sampleSubmission.csv')
 
     if args.do_plot:
-        plot_history(args.arch, plot_acc=True)
+        plot_history(args.arch,args.max_epoch,args.do_plot)
 
 
 if __name__ == '__main__':
