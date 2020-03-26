@@ -4,11 +4,8 @@ from ipdb import set_trace as pdb
 
 class simpleNet(nn.Module):
 
-    def __init__(self, hidden_size, missing_list):
+    def __init__(self, hidden_size, input_size, output_size):
          super(simpleNet, self).__init__()
-
-         input_size = 9 - len(missing_list)
-         output_size = 1
 
          self.input = nn.Linear(input_size, hidden_size)
          self.bn0 = nn.BatchNorm1d(hidden_size)

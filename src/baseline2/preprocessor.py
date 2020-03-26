@@ -14,12 +14,14 @@ def preprocess_samples(data, missing):
 def preprocess_sample(data,missing):
 
     features = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9']
-    if missing:
-        for m in missing:
-            features.remove(m)
     processed_dict = {}
+    processed_dict['Missing']=[]
+    for m in missing:
+        features.remove(m)
+        processed_dict['Missing'].append(data[m])
+
     processed_dict['Features'] = [data[feature] for feature in features]
-    processed_dict['F1'] = [data['F1']]
+
     if 'Class' in data:
         processed_dict['Label'] = label_to_idx(data['Class'])
 

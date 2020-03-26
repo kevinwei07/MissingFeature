@@ -16,19 +16,11 @@ class FeatureDataset(Dataset):
 
         batch_feature = []
         batch_label = []
+        batch_missing = []
         for data in datas:
             batch_feature.append(data['Features'])
+            batch_missing.append(data['Missing'])
             if 'Label' in data:
                 batch_label.append(data['Label'])
 
-        return torch.FloatTensor(batch_feature), torch.LongTensor(batch_label)
-
-    def collate_fn_f1(self, datas):
-
-        batch_feature = []
-        batch_f1 = []
-        for data in datas:
-            batch_feature.append(data['Features'])
-            batch_f1.append(data['F1'])
-
-        return torch.FloatTensor(batch_feature), torch.FloatTensor(batch_f1)
+        return torch.FloatTensor(batch_feature), torch.LongTensor(batch_label), torch.FloatTensor(batch_missing)

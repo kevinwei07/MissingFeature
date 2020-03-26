@@ -22,9 +22,8 @@ class Accuracy:
         # max(,0) return the max element and its index (column-based)
         # max(,1) return the max element and its index (row-based)
         self.n_total += len(groundTruth)
-        #pdb()
-        #pred = torch.max(predicts,1)[1]
-        #self.n_corrects += (pred == groundTruth).sum()
+        pred = torch.max(predicts,1)[1]
+        self.n_corrects += (pred == groundTruth).sum()
 
         #train_acc = self.n_corrects.item()
         #return train_acc

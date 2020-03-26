@@ -53,7 +53,7 @@ class Trainer:
         trange = tqdm(enumerate(dataloader), total = len(dataloader), desc = description)
         loss = 0
         accuracy = Accuracy()
-        for i, (x, y) in trange:  # (x,y) = 128*128
+        for i, (x, y,) in trange:  # (x,y) = 128*128
             o_labels, batch_loss = self.run_iter(x, y)
             if training:
                 self.opt.zero_grad()  # reset gradient to 0

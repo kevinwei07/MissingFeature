@@ -15,16 +15,17 @@ torch.backends.cudnn.enabled = False
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--arch', required = True)
-    parser.add_argument('--do_train', action = 'store_true')
-    parser.add_argument('--do_predict', action = 'store_true')
-    parser.add_argument('--data_dir', default = '../../data/')
-    parser.add_argument('--cuda', default = 0)
-    parser.add_argument('--hidden_size', default = 256 , type = int )
-    parser.add_argument('--batch_size', default = 256, type = int)
-    parser.add_argument('--max_epoch', default=1500, type = int)
-    parser.add_argument('--lr', default = 1e-3 , type = float)
-    parser.add_argument('--wd', default = 1e-2, type = float)
+    parser.add_argument('--arch', required=True)
+    parser.add_argument('--do_train', action='store_true')
+    parser.add_argument('--do_predict', action='store_true')
+    parser.add_argument('--data_dir', default='../../data/')
+    parser.add_argument('--cuda', default=1)
+    parser.add_argument('--hidden_size', default=256 , type=int)
+    parser.add_argument('--batch_size', default=256, type=int)
+    parser.add_argument('--epoch1', default=10, type=int)
+    parser.add_argument('--epoch2', default=50, type=int)
+    parser.add_argument('--lr', default=1e-3 , type=float)
+    parser.add_argument('--wd', default=1e-2, type=float)
     parser.add_argument('--do_plot', action = 'store_true')
     args = parser.parse_args()
 
@@ -36,7 +37,7 @@ def main():
         data = pd.read_csv(args.data_dir + 'train.csv')
         # axis = 0 for row ; axis = 1 for column
         # inplace = if modify the origin data
-        data.drop("Id", axis = 1, inplace = True)
+        data.drop("Id", axis=1, inplace=True)
         # for drop in missing_list:
         #    data.drop(drop, axis = 1, inplace = True)
 
@@ -47,21 +48,33 @@ def main():
         validData = FeatureDataset(valid)
 
         device = torch.device('cuda:%d' % args.cuda if torch.cuda.is_available() else 'cpu')
-        model = simpleNet(args.hidden_size,missing_list)
-        model.to(device)
+        model1 = simpleNet(args.hidden_size, 9-len(missing_list), len(missing_list))
+        model1.to(device)
         batch_size = args.batch_size
-        optimizer = torch.optim.Adam(model.parameters(), lr = args.lr, weight_decay = args.wd)
-        # MSELoss is loss function for
-        loss_function = torch.nn.MSELoss()
-        max_epoch = args.max_epoch
+        optimizer = torch.optim.Adam(model1.parameters(), lr=args.lr, weight_decay=args.wd)
 
-        trainer = Trainer(device, trainData, validData, model, loss_function, optimizer, batch_size, args.arch)
+        # MSELoss is loss function for regression
+        trainer = Trainer(device, trainData, validData, model1, None, optimizer, batch_size, args.arch)
+        epoch1 = args.epoch1
 
-        for epoch in range(max_epoch):
+        for epoch in range(epoch1):
             print('Epoch: {}'.format(epoch))
             # True for training ; False for validation
-            trainer.run_epoch(epoch, True)
-            trainer.run_epoch(epoch, False)
+            trainer.run_epoch(epoch1, True, stage1=True)
+            trainer.run_epoch(epoch1, False, stage1=True)
+
+        # CrossEntropyLoss is loss function for multi-class classification
+        model2 = simpleNet(args.hidden_size, 9, 12)
+        model2.to(device)
+        optimizer = torch.optim.Adam(model2.parameters(), lr=args.lr, weight_decay=args.wd)
+        trainer = Trainer(device, trainData, validData, model1, model2, optimizer, batch_size, args.arch)
+        epoch2 = args.epoch2
+
+        for epoch in range(epoch2):
+            print('Epoch: {}'.format(epoch))
+            # True for training ; False for validation
+            trainer.run_epoch(epoch, True, stage1=False)
+            trainer.run_epoch(epoch, False, stage1=False)
         pass
 
     if args.do_predict:
