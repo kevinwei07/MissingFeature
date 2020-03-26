@@ -2,16 +2,11 @@ import pandas as pd
 import json
 import os
 from matplotlib import pyplot as plt
-import numpy as np
 from ipdb import set_trace as pdb
 
 
 def SubmitGenerator(prediction, sampleFile):
-    """
-    Args:
-        prediction (numpy array)
-        sampleFile (str)
-    """
+
     if not os.path.exists('result'):
         os.makedirs('result')
 
@@ -24,13 +19,14 @@ def SubmitGenerator(prediction, sampleFile):
     prediction_class = [key_list[p] for p in prediction]
     submit['Class'] = list(prediction_class)
     df = pd.DataFrame.from_dict(submit)
-    df.to_csv('result/prediction.csv', index=False)
+    df.to_csv('result/prediction.csv', index = False)
 
 
-def plot_history(arch, max_epoch, plot_acc=True):
+def plot_history(arch, max_epoch, plot_acc = True):
     """
     Ploting training process
     """
+
     arch_list = ['missing0', 'missing0+bn', 'missing0+bn+lr', 'missing0+bn+lr+l2']
     plt.figure(figsize=(7, 5))
     plt.grid()
@@ -88,28 +84,3 @@ def plot_history(arch, max_epoch, plot_acc=True):
         plt.savefig(f'{arch}/accuracy.png')
 
         print('Best acc', str(max([[l['accuracy'], idx + 1] for idx, l in enumerate(history['valid'])]))+ " in "+ arch)
-
-
-
-# def test_plot():
-#     x = np.linspace(-3, 3, 50)
-#     y1 = 2 * x + 1
-#     y2 = x ** 2
-#
-#     plt.figure()
-#     plt.plot(x, y2)
-#     plt.plot(x, y1, color='red', linewidth=1.0, linestyle='--')
-#
-#     plt.xlim((-1, 2))
-#     plt.ylim((-2, 3))
-#     plt.xlabel('I am x')
-#     plt.ylabel('I am y')
-#     plt.show()
-#
-#     new_ticks = np.linspace(-1, 2, 5)
-#     print(new_ticks)
-#     plt.xticks(new_ticks)
-#
-#     plt.yticks([-2, -1.8, -1, 1.22, 3], [r'$really\ bad$', r'$bad$', r'$normal$', r'$good$', r'$really\ good$'])
-#
-#     plt.savefig('test.png')

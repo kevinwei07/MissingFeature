@@ -11,7 +11,8 @@ def preprocess_samples(dataset, missing=None):
     """
     processed = []
     for sample in tqdm(dataset.iterrows(), total=len(dataset), desc='[Preprocess]'):
-        #pdb() # sample[0] is id, sample[1] is data F2-F9 & class
+        #pdb()
+        # sample[0] is id, sample[1] is data F2-F9 & class
         processed.append(preprocess_sample(sample[1], missing))
 
     return processed
@@ -29,6 +30,7 @@ def preprocess_sample(data, missing):
         for m in missing:
             features.remove(m)
     processed = {}
+    pdb()
     processed['Features'] = [data[feature] for feature in features]
     if 'Class' in data:
         processed['Label'] = label_to_idx(data['Class'])
