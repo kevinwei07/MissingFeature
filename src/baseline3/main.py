@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--cuda', default=1, type=str)
     parser.add_argument('--hidden_size', default=256, type=int)
     parser.add_argument('--batch_size', default=256, type=int)
-    parser.add_argument('--max_epoch', default=100, type=int)
+    parser.add_argument('--max_epoch', default=1500, type=int)
     parser.add_argument('--lr', default=1e-3, type=float)
     parser.add_argument('--wd', default=1e-2, type=float)
     parser.add_argument('--do_plot', action='store_true')
@@ -47,7 +47,7 @@ def main():
         validData = FeatureDataset(valid)
 
         device = torch.device('cuda:%d' % args.cuda if torch.cuda.is_available() else 'cpu')
-        model = simpleNet(args.hidden_size, 9-len(missing_list), 13)
+        model = simpleNet(args.hidden_size, 9-len(missing_list))
         model.to(device)
         batch_size = args.batch_size
         optimizer = torch.optim.Adam(model.parameters(), lr = args.lr, weight_decay = args.wd)

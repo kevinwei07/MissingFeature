@@ -78,13 +78,11 @@ class Trainer:
         self.save_hist()
 
     def run_iter(self, x, y,miss):
-
         features = x.to(self.device)    # (256, 8)
         labels = y.to(self.device)      # (256)
         miss = miss.to(self.device)
 
-        o_miss = self.model(features)  # (256, 1)
-        o_labels = self.model(features)
+        o_miss, o_labels = self.model(features)  # (256, 1)
 
         missing_loss = self.criteria1(o_miss, miss)
         l_loss = self.criteria2(o_labels, labels)

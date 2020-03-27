@@ -4,6 +4,10 @@
 Predict missing feature by the features we have,
 and concat the missing with it as a new input to predict the label.
 
+2-stage training
+1. Feature predictor
+2. Target task predictor
+
 ## How to run
 
 * preprocess and train
