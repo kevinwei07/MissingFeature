@@ -52,7 +52,7 @@ def main():
         validData = FeatureDataset(valid)
 
         device = torch.device('cuda:%d' % args.cuda if torch.cuda.is_available() else 'cpu')
-        model = simpleNet(args.hidden_size,missing_list)
+        model = simpleNet(args.hidden_size)
         model.to(device)
         batch_size = args.batch_size
         optimizer = torch.optim.Adam(model.parameters(), lr = args.lr, weight_decay = args.wd)

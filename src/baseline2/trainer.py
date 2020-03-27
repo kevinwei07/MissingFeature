@@ -60,6 +60,7 @@ class Trainer:
 
         if stage1:
             for i, (x, y, miss) in trange:  # (x,y) = b*b
+                pdb()
                 o_f1, batch_loss = self.run_iter_stage1(x, miss)
 
                 if training:

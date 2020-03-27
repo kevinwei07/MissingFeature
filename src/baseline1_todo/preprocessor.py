@@ -30,7 +30,6 @@ def preprocess_sample(data, missing):
         for m in missing:
             features.remove(m)
     processed = {}
-    pdb()
     processed['Features'] = [data[feature] for feature in features]
     if 'Class' in data:
         processed['Label'] = label_to_idx(data['Class'])
